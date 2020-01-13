@@ -17,9 +17,9 @@
 - xgboost
 
 #### To reproduce results:
-1. ```python stats.py show```
-2. ```python stats.py run```
-3. ```jupyter-notebook stats.ipynb```
+1. ```python data_prep.py show```
+2. ```python data_prep.py run```
+3. ```jupyter-notebook Predictive_Analytics.ipynb```
 
 
 ## To Do
