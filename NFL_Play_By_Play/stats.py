@@ -46,7 +46,7 @@ class NFLStatsFlow(FlowSpec):
 
         self.baltimore_df = self.baltimore_df.replace(np.nan, 'unknown', regex=True)
         self.baltimore_df['full_play_type'] = self.baltimore_df[['play_type','pass_location', 'pass_length','run_location']].apply(get_full_play_type, axis=1)
-        self.baltimore_df = self.baltimore_df[(self.baltimore_df.full_play_type.isin(['pass_left_short','pass_left_long', 'pass_middle_short','pass_middle_long', 'pass_right_short','pass_right_long','run_left', 'run_middle', 'run_right']))]
+        self.baltimore_df = self.baltimore_df[(self.baltimore_df.full_play_type.isin(['pass_left_short','pass_left_deep', 'pass_middle_short','pass_middle_deep', 'pass_right_short','pass_right_deep','run_left', 'run_middle', 'run_right']))]
 
 
         self.baltimore_df['rushing_yards_gained'] = np.where(self.baltimore_df['play_type']=='run', self.baltimore_df['yards_gained'], 0)
