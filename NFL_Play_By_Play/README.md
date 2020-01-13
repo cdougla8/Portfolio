@@ -1,5 +1,7 @@
 # Predicting the next Ravens Play
 
+*current accuracy: ~26%*
+
 **Use a gradient boosted decision tree to try and predict if the Ravens will run one of the following plays:
 - Run Left, Run Right, Run Center
 - Pass Short Left, Pass Short Right, Pass Short Center
