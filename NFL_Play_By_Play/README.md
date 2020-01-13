@@ -1,8 +1,8 @@
-# Predicting the next Ravens Play
+# Predicting the next 49ers Play
 
-*current accuracy: ~26%*
+*current accuracy: ~28%*
 
-**Use a gradient boosted decision tree to try and predict if the Ravens will run one of the following plays:
+**Use a gradient boosted decision tree to try and predict if the 49ers will run one of the following plays:
 - Run Left, Run Right, Run Center
 - Pass Short Left, Pass Short Right, Pass Short Center
 - Pass Long Left, Pass Long Right, Pass Long Center

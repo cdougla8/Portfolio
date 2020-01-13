@@ -30,9 +30,9 @@ class NFLStatsFlow(FlowSpec):
         ########################################################
         self.nfl_dataframe = pandas.read_csv(StringIO(self.nfl_data))
 
-        # Filter data down to Baltimore Ravens
-        self.baltimore_df = self.nfl_dataframe[ \
-            (self.nfl_dataframe.posteam=='BAL') & \
+        # Filter data down to San Francisco 49'ers
+        self.san_fran_df = self.nfl_dataframe[ \
+            (self.nfl_dataframe.posteam=='SF') & \
             (self.nfl_dataframe.down.isin(range(1,5))) & \
             ((self.nfl_dataframe.play_type=='run') | (self.nfl_dataframe.play_type == 'pass')) & \
             (self.nfl_dataframe.qb_spike==0) & \
@@ -45,16 +45,16 @@ class NFLStatsFlow(FlowSpec):
 
         from modules import get_full_play_type
 
-        self.baltimore_df = self.baltimore_df.replace(np.nan, 'unknown', regex=True)
-        self.baltimore_df['full_play_type'] = self.baltimore_df[['play_type','pass_location', 'pass_length','run_location']].apply(get_full_play_type, axis=1)
-        self.baltimore_df = self.baltimore_df[(self.baltimore_df.full_play_type.isin(['pass_left_short','pass_left_deep', 'pass_middle_short','pass_middle_deep', 'pass_right_short','pass_right_deep','run_left', 'run_middle', 'run_right']))]
+        self.san_fran_df = self.san_fran_df.replace(np.nan, 'unknown', regex=True)
+        self.san_fran_df['full_play_type'] = self.san_fran_df[['play_type','pass_location', 'pass_length','run_location']].apply(get_full_play_type, axis=1)
+        self.san_fran_df = self.san_fran_df[(self.san_fran_df.full_play_type.isin(['pass_left_short','pass_left_deep', 'pass_middle_short','pass_middle_deep', 'pass_right_short','pass_right_deep','run_left', 'run_middle', 'run_right']))]
 
         ########################################################
         ####### 3) Add rushing/passing specific metrics. #######
         ########################################################
 
-        self.baltimore_df['rushing_yards_gained'] = np.where(self.baltimore_df['play_type']=='run', self.baltimore_df['yards_gained'], 0)
-        self.baltimore_df['passing_yards_gained'] = np.where(self.baltimore_df['play_type']=='pass', self.baltimore_df['yards_gained'], 0)
+        self.san_fran_df['rushing_yards_gained'] = np.where(self.san_fran_df['play_type']=='run', self.san_fran_df['yards_gained'], 0)
+        self.san_fran_df['passing_yards_gained'] = np.where(self.san_fran_df['play_type']=='pass', self.san_fran_df['yards_gained'], 0)
 
         self.next(self.drive_level_index)
 
@@ -63,7 +63,7 @@ class NFLStatsFlow(FlowSpec):
         """
         Create an unique identifier for a drive + game id
         """
-        self.baltimore_df['unique_drive'] = self.baltimore_df.apply(lambda row: str(row['game_id']) + '_' + str(row['drive']), axis=1)
+        self.san_fran_df['unique_drive'] = self.san_fran_df.apply(lambda row: str(row['game_id']) + '_' + str(row['drive']), axis=1)
         self.next(self.drive_level_metrics)
 
     @step
@@ -76,19 +76,19 @@ class NFLStatsFlow(FlowSpec):
             index_name = 'unique_drive'
             if (granularity == 'game'):
                 index_name = 'game_id'
-            a = self.baltimore_df.groupby(index_name)[metric].cumsum()
+            a = self.san_fran_df.groupby(index_name)[metric].cumsum()
             a.name = new_name + '_after'
-            self.baltimore_df = pandas.concat([self.baltimore_df, a], axis = 1)
-            self.baltimore_df[new_name] = self.baltimore_df.groupby([index_name])[a.name].shift(1)
-            self.baltimore_df[new_name].fillna(fill_blanks, inplace=True)
+            self.san_fran_df = pandas.concat([self.san_fran_df, a], axis = 1)
+            self.san_fran_df[new_name] = self.san_fran_df.groupby([index_name])[a.name].shift(1)
+            self.san_fran_df[new_name].fillna(fill_blanks, inplace=True)
 
         def get_rank_data(metric, new_name, fill_blanks = 0, granularity = 'drive'):
             index_name = 'unique_drive'
             if (granularity == 'game'):
                 index_name = 'game_id'
-            a = self.baltimore_df.groupby(index_name)[metric].rank(ascending = True, method = 'first')
+            a = self.san_fran_df.groupby(index_name)[metric].rank(ascending = True, method = 'first')
             a.name = new_name
-            self.baltimore_df = pandas.concat([self.baltimore_df, a], axis = 1)
+            self.san_fran_df = pandas.concat([self.san_fran_df, a], axis = 1)
 
         from metric_list import metric_list
 
@@ -114,8 +114,8 @@ class NFLStatsFlow(FlowSpec):
                     granularity = 'game'
                 )
 
-        self.baltimore_df['previous_play_in_drive'] = self.baltimore_df.groupby(['unique_drive'])['full_play_type'].shift(1)
-        self.baltimore_df['previous_play_in_drive'].fillna('first_play', inplace=True)
+        self.san_fran_df['previous_play_in_drive'] = self.san_fran_df.groupby(['unique_drive'])['full_play_type'].shift(1)
+        self.san_fran_df['previous_play_in_drive'].fillna('first_play', inplace=True)
 
         self.next(self.end)
     @step
