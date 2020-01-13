@@ -72,15 +72,15 @@ class NFLStatsFlow(FlowSpec):
         Adds metrics about the specific drive (ie rushing yards, penalties, sacks, etc)
         """
 
-        def get_cumulative_data(dataframe, metric, new_name, fill_blanks = 0, granularity = 'drive'):
+        def get_cumulative_data(metric, new_name, fill_blanks = 0, granularity = 'drive'):
             index_name = 'unique_drive'
             if (granularity == 'game'):
                 index_name = 'game_id'
-            a = dataframe.groupby(index_name)[metric].cumsum()
+            a = self.baltimore_df.groupby(index_name)[metric].cumsum()
             a.name = new_name + '_after'
-            dataframe = pandas.concat([dataframe, a], axis = 1)
-            dataframe[new_name] = dataframe.groupby([index_name])[a.name].shift(1)
-            dataframe[new_name].fillna(fill_blanks, inplace=True)
+            self.baltimore_df = pandas.concat([self.baltimore_df, a], axis = 1)
+            self.baltimore_df[new_name] = self.baltimore_df.groupby([index_name])[a.name].shift(1)
+            self.baltimore_df[new_name].fillna(fill_blanks, inplace=True)
 
         def get_rank_data(metric, new_name, fill_blanks = 0, granularity = 'drive'):
             index_name = 'unique_drive'
