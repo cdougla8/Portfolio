@@ -4,7 +4,7 @@ import numpy as np
 
 class NFLStatsFlow(FlowSpec):
     """
-    A flow to collect some information about the Baltimore Ravens plays in 2019.
+    A flow to collect some information about the San Francisco 49ers plays in 2019.
 
     The flow performs the following steps:
     1) Ingests a CSV into a Pandas Dataframe.
