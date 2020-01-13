@@ -16,4 +16,5 @@
 
 #### To reproduce results:
 1. ```python stats.py show```
-2. ```jupyter-notebook stats.ipynb```
+2. ```python stats.py run```
+3. ```jupyter-notebook stats.ipynb```
